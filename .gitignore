@@ -1,0 +1,23 @@
+# dependencies
+**/node_modules
+
+# env / secrets
+**/.env
+**/.env.local
+**/.env*.local
+
+# hardhat
+contracts/cache
+contracts/artifacts
+contracts/typechain-types
+
+# next.js
+web/.next
+web/out
+web/build
+web/.vercel
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*
