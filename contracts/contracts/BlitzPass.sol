@@ -16,7 +16,7 @@ contract BlitzPass {
     mapping(uint256 => mapping(uint8 => uint256)) public reactionTally;// eventId => kind => count
 
     // --- global state ---
-    uint256 public totalTx; // every claim/react bumps this; powers the "on-chain tx" counter
+    mapping(uint256 => uint256) public totalTxLane; // lane-based counter for parallel txs
 
     event Claimed(
         uint256 indexed eventId,
@@ -37,8 +37,9 @@ contract BlitzPass {
     ///         reverts (so a double-tap can't break the live demo) but only the
     ///         first claim counts toward attendance and emits Claimed.
     function claimPass(uint256 eventId, address user) external {
+        uint256 lane = uint256(uint160(msg.sender)) % 16;
         unchecked {
-            totalTx++;
+            totalTxLane[lane]++;
         }
         _ensureAttendance(eventId, user);
     }
@@ -46,8 +47,9 @@ contract BlitzPass {
     /// @notice Leave a reaction. Auto-checks-in if the user hasn't claimed yet,
     ///         so reactions never revert during a fast-moving live demo.
     function react(uint256 eventId, uint8 kind, address user) external {
+        uint256 lane = uint256(uint160(msg.sender)) % 16;
         unchecked {
-            totalTx++;
+            totalTxLane[lane]++;
         }
         _ensureAttendance(eventId, user);
 
@@ -75,5 +77,11 @@ contract BlitzPass {
 
     function getScore(uint256 eventId, address user) external view returns (uint256) {
         return score[eventId][user];
+    }
+
+    function getTotalTx() external view returns (uint256 total) {
+        for (uint256 i = 0; i < 16; i++) {
+            total += totalTxLane[i];
+        }
     }
 }

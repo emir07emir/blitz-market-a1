@@ -10,6 +10,8 @@ import { monadTestnet, MONAD_RPC_URL } from "./chain";
 import {
   CONTRACT_ADDRESS,
   CONTRACT_ABI,
+  COIN_ADDRESS,
+  COIN_ABI,
   isDeployed,
   publicClient,
 } from "./contract";
@@ -72,12 +74,17 @@ async function sendVia(
   }
   const nonce = signer.nonce;
   signer.nonce = nonce + 1;
+
+  const isCoin = functionName === "reward";
+  const targetAddress = isCoin ? COIN_ADDRESS : CONTRACT_ADDRESS;
+  const targetAbi = isCoin ? COIN_ABI : CONTRACT_ABI;
+
   try {
     return await signer.client.writeContract({
       account: signer.account,
       chain: monadTestnet,
-      address: CONTRACT_ADDRESS as `0x${string}`,
-      abi: CONTRACT_ABI,
+      address: targetAddress as `0x${string}`,
+      abi: targetAbi,
       functionName,
       args: args as unknown[],
       nonce,
