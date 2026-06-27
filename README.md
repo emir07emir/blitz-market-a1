@@ -1,54 +1,53 @@
-# ⚡ BlitzPass — Live Event Experiences, on Monad
+# ⚡ BlitzPass — Monad Üzerinde Canlı Etkinlik Deneyimleri
 
-Turn any live event — a **concert**, an **esports final**, a **festival**, a **meetup** — into a real-time, on-chain consumer experience.
+Herhangi bir canlı etkinliği — bir **konser**, **e-spor finali**, **festival** veya **buluşma** (meetup) — gerçek zamanlı, zincir üstü (on-chain) bir tüketici deneyimine dönüştürün.
 
-Scan a QR → your wallet is created instantly (no app, no seed phrase, **no gas**) → claim your **BlitzPass** → fire off **reactions** → and watch the room come alive on the big screen: a live **activity feed**, a **most-active leaderboard**, and counters showing **every reaction landing on-chain in real time**.
+Bir QR kod taratın → cüzdanınız anında oluşturulsun (uygulama yüklemek yok, kelime dizisi (seed phrase) yok, **gas ücreti yok**) → **BlitzPass** biletinizi alın → **reaksiyonlarınızı** ateşleyin → ve dev ekranda tüm salonun canlanışını izleyin: canlı bir **aktivite akışı**, **en çok reaksiyon gönderenler tablosu** ve **her reaksiyonun gerçek zamanlı olarak ağa işlendiğini gösteren sayaçlar**.
 
-Built for **Monad Blitz Ankara** on the Monad parallel-EVM testnet.
+Monad paralel-EVM test ağı üzerinde **Monad Blitz Ankara** için geliştirilmiştir.
 
 ---
 
-## Why this is a *Monad* app (not a Firebase app)
+## Neden bu bir *Monad* uygulaması? (Firebase değil)
 
-Every claim and every reaction is a **real on-chain transaction**. The stage screen shows a live **transaction + TPS counter** — proof you're watching the chain, not a database. A room full of phones hammering reactions at once is exactly what Monad's **parallel execution, 400ms blocks and high throughput** are built for. And the BlitzPass + reaction history lives in the attendee's own wallet — portable proof-of-presence that outlives the event.
+Bilet alma (claim) ve gönderilen her reaksiyon **gerçek bir zincir üstü (on-chain) işlemdir (transaction)**. Sahne ekranında canlı bir **işlem + TPS (Saniyedeki İşlem) sayacı** bulunur — bu da bir veritabanını değil, doğrudan ağın kendisini izlediğinizin kanıtıdır. Bir salon dolusu insanın aynı anda telefonlarından reaksiyon göndermesi, tam olarak Monad'ın **paralel işlem yürütme, 400ms blok süreleri ve yüksek ağ kapasitesi (throughput)** özellikleri için biçilmiş kaftandır. Üstelik BlitzPass biletiniz ve reaksiyon geçmişiniz katılımcının kendi cüzdanında saklanır — etkinlikten sonra da sizinle kalan taşınabilir bir "orada bulunma kanıtı" (proof-of-presence).
 
-## How it works
+Buna ek olarak BlitzPass, BlitzMarket ile ortak bir **on-chain ekonomiyi (`BlitzCoin`)** paylaşır. Kullanıcılar etkinliklerde ödül kazanır ve bu coin'leri anında markette harcayabilir.
 
-| Piece | Tech |
+## Nasıl Çalışır?
+
+| Parça | Teknoloji |
 |------|------|
-| Smart contract (`BlitzPass`) | Solidity + Hardhat, deployed to Monad testnet (chain `10143`) |
-| Gasless onboarding | Browser **burner wallet** (viem) + backend **relayer pool** that sponsors gas |
-| Phone app | Next.js (App Router) + viem — join, claim, react |
-| Stage screen | Live feed + leaderboard + attendee / tx / TPS counters, driven by on-chain events |
-| Vibrant events showcase | Poster-style covers for concerts, esports, festivals & meetups |
+| Akıllı sözleşme (`BlitzPass` & `BlitzCoin`) | Solidity + Hardhat, Monad test ağına deploy edilmiştir (chain `10143`) |
+| Gas Ücretsiz Katılım (Gasless) | Tarayıcıda çalışan **geçici cüzdan (burner wallet)** (viem) + gas ücretlerini karşılayan backend **relayer havuzu** |
+| Telefon uygulaması | Next.js (App Router) + viem — katıl, biletini al, reaksiyon ver, ödül kazan |
+| Sahne ekranı | Tamamen zincir üstü olaylardan beslenen canlı akış + liderlik tablosu + katılımcı / tx / TPS sayaçları |
 
-Onboarding & indexing are aligned with the Monad ecosystem ([MONSKILLS](https://skills.devnads.com)): **Para** embedded MPC wallets and **Envio HyperIndex** are the drop-in upgrades for production; this demo ships a self-contained viem path for live-demo reliability.
-
-## Repo layout
+## Repo Yapısı
 
 ```
-contracts/   Hardhat project — BlitzPass.sol, tests, deploy script
-web/         Next.js app — events showcase, phone app, stage screen, relayer API
+contracts/   Hardhat projesi — BlitzCoin.sol, testler ve deploy scripti
+web/         Next.js uygulaması — etkinlik vitrini, telefon uygulaması, sahne ekranı ve relayer API
 ```
 
-## Quickstart
+## Hızlı Başlangıç
 
 ```bash
-# 1) contracts
+# 1) contracts (Akıllı Sözleşmeler)
 cd contracts
 npm install
-npm run keys                       # generates deployer + relayer pool keys
-# fund the printed addresses at https://faucet.monad.xyz, put PRIVATE_KEY in contracts/.env
-npm test                           # run the test suite
-npm run deploy                     # deploy to Monad testnet -> writes web/lib/blitzpass.json
+npm run keys                       # deployer + relayer cüzdan anahtarlarını üretir
+# Ekranda yazan adresleri https://faucet.monad.xyz adresinden fonlayın, PRIVATE_KEY değerini contracts/.env dosyasına koyun
+npm test                           # testleri çalıştırın
+npm run deploy                     # Monad test ağına deploy eder -> shared/blitzcoin.json dosyasını yazar
 
-# 2) web
+# 2) web (Next.js Uygulaması)
 cd ../web
 npm install
-# put RELAYER_KEYS=0x..,0x.. in web/.env.local
+# RELAYER_KEYS=0x..,0x.. değerlerini web/.env.local dosyasına ekleyin
 npm run dev                        # http://localhost:3000
 ```
 
 Monad testnet: RPC `https://testnet-rpc.monad.xyz` · chainId `10143` · faucet `https://faucet.monad.xyz`
 
-> ⚠️ Hackathon code. Wallets are demo burners; do not reuse keys or ship unaudited contracts to mainnet.
+> ⚠️ Hackathon kodudur. Cüzdanlar demo amaçlı geçicidir; özel anahtarları tekrar kullanmayın veya denetlenmemiş sözleşmeleri mainnet'e deploy etmeyin.
