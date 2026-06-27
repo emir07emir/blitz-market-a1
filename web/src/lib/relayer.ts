@@ -61,7 +61,7 @@ export function relayerAddresses(): string[] {
 
 async function sendVia(
   signer: Signer,
-  functionName: "claimPass" | "react",
+  functionName: "claimPass" | "react" | "reward",
   args: readonly unknown[]
 ): Promise<Hex> {
   if (signer.nonce === null) {
@@ -92,7 +92,7 @@ async function sendVia(
 }
 
 export async function relay(
-  functionName: "claimPass" | "react",
+  functionName: "claimPass" | "react" | "reward",
   args: readonly unknown[]
 ): Promise<Hex> {
   if (!relayerReady()) {

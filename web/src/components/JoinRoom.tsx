@@ -13,6 +13,7 @@ export function JoinRoom({ event }: { event: BlitzEvent }) {
   const [address, setAddress] = useState<`0x${string}` | "">("");
   const [claimed, setClaimed] = useState(false);
   const [claiming, setClaiming] = useState(false);
+  const [rewarded, setRewarded] = useState(false);
   const [score, setScore] = useState(0);
   const [bursts, setBursts] = useState<Burst[]>([]);
   const [lastTx, setLastTx] = useState<string | null>(null);
@@ -80,6 +81,14 @@ export function JoinRoom({ event }: { event: BlitzEvent }) {
       const d = await post("/api/claim", { eventId: event.id, address });
       if (d.hash) setLastTx(d.hash);
       setLive((s) => ({ ...s, attendees: s.attendees + 1 }));
+      
+      // Also reward the user
+      try {
+        await post("/api/reward", { eventId: event.id, address });
+        setRewarded(true);
+      } catch (err) {
+        console.error("Reward failed", err);
+      }
     } catch (e) {
       flash(
         (e as Error).message === "relayer_not_ready"
@@ -180,6 +189,20 @@ export function JoinRoom({ event }: { event: BlitzEvent }) {
             </div>
             <div className="text-5xl">🎟️</div>
           </div>
+          
+          {rewarded && (
+            <div className="relative z-10 mt-6 rounded-xl bg-black/20 p-4 text-center">
+              <div className="mb-2 font-display text-xl uppercase text-sun">You earned coins! 🪙</div>
+              <a
+                href={`http://localhost:3001/?addr=${address}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block rounded-full bg-white px-5 py-2 text-sm font-bold text-ink transition-transform active:scale-95"
+              >
+                Open BlitzMarket →
+              </a>
+            </div>
+          )}
         </div>
       )}
 
